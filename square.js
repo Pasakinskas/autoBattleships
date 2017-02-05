@@ -1,10 +1,11 @@
 class Square {
-    constructor (x, y, color, shipHere, squareShot) {
+    constructor (x, y, color, shipHere, squareShot, neighbors) {
         this.x = x;
         this.y = y;
-        this.color = "blue";
+        this.color = null;
         this.shipHere = false;
         this.squareShot = false;
+        this.neighbors = [];
     }
 
     setColor(color) {
