@@ -5,7 +5,7 @@ class Square {
         this.color = null;
         this.shipHere = false;
         this.squareShot = false;
-        this.neighbors = [];
+        this.neighbors = null;
     }
 
     setColor(color) {
