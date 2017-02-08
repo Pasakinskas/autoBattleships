@@ -19,8 +19,8 @@ class Graphics {
         this.context.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    drawBoard (board, paddingLeft, paddingTop) {
-        board.forEach ((row, y) => {
+    drawBoard (data, paddingLeft, paddingTop) {
+        data.forEach ((row, y) => {
             row.forEach ((square, x) => {
                 if (!square.getColor()) {
                     this.context.fillStyle = "blue";                    
