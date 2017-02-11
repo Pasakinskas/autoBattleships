@@ -5,7 +5,20 @@ class Player {
         this.shootingHistory = [];
     }
 
-    decideShipSpot() {}
+    pickRandSquare() {
+        let square = this.board.data[Utilities.randinteger(this.board.width)]
+        [Utilities.randinteger(this.board.height)];
+        if (square.shipHere == false) {
+            return square;
+        }
+    }
+
+    decideShipSpot() {
+        // must check for neighbors, 10% chance of placing
+        // ship in the first, or last square
+        // later, add mouse hover, for player interaction
+
+    }
 
     decideFireSpot() {}
 }

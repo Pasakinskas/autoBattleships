@@ -17,6 +17,7 @@ class Graphics {
         let canvas = document.getElementById('canvas');
         canvas.width = singleGridWidth * playerNmb * 1.25 - 0.25 * singleGridWidth;
         canvas.height = singleGridHeight;
+        
         this.context = canvas.getContext("2d");
         this.context.fillStyle = "grey";
         this.context.fillRect(0, 0, canvas.width, canvas.height);
