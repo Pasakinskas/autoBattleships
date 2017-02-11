@@ -5,16 +5,19 @@ class Graphics {
         this.spcBetweenSquares = spcBetweenSquares;
     }
 
-    initGraphics (width, height, playerNmb) {
+    getGridSize (width, height) {
         let singleGridWidth = (width * (this.cellWidth + this.spcBetweenSquares)
          + this.spcBetweenSquares);
-        let singleGridLength = (height * (this.cellHeight + this.spcBetweenSquares)
-         + this.spcBetweenSquares);
+        let singleGridHeight = (height * (this.cellHeight + this.spcBetweenSquares)
+         + this.spcBetweenSquares); 
+         return [singleGridWidth, singleGridHeight];
+    }
 
+    initGraphics (singleGridWidth, singleGridHeight, playerNmb) {
         let canvas = document.getElementById('canvas');
+        canvas.width = singleGridWidth * playerNmb * 1.25 - 0.25 * singleGridWidth;
+        canvas.height = singleGridHeight;
         this.context = canvas.getContext("2d");
-        canvas.width = singleGridWidth * playerNmb + 0.5 * singleGridWidth;
-        canvas.height = singleGridLength;
         this.context.fillStyle = "grey";
         this.context.fillRect(0, 0, canvas.width, canvas.height);
     }

@@ -32,20 +32,21 @@ class Game {
         this.players.forEach((player) => {
             player.board = new Board(width, height);
         });
-        this.placeShip(2, 5, 3, "h", this.players[0].board.data);
+        // this.placeShip(2, 5, 2, "h", this.players[0].board.data);
     }
 
     start () {
-        const boardWidth = 14;
-        const boardHeight = 14;
-        const graphics = new Graphics(14, 14, 1);
-        
+        const boardWidth = 10;
+        const boardHeight = 10;
+        const graphics = new Graphics(15, 15, 1);
+        const gridSize = graphics.getGridSize(boardWidth, boardHeight)
+
         this.createPlayers(boardWidth, boardHeight);
-        graphics.initGraphics(boardWidth, boardHeight, this.players.length);
+        graphics.initGraphics(gridSize[0], gridSize[1], this.players.length);
 
         graphics.drawBoard(this.players[0].board.data, 0, 0);
-        graphics.drawBoard(this.players[1].board.data, 250, 0);
-        graphics.drawBoard(this.players[2].board.data, 500, 0);
+        graphics.drawBoard(this.players[1].board.data, Math.floor(1.25 * gridSize[0]), 0);
+        graphics.drawBoard(this.players[2].board.data, Math.floor(2.5 * gridSize[0]), 0);
     }
 }
 
