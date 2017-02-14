@@ -15,7 +15,7 @@ class Player {
 
     decideShipSpot() {
         // must check for neighbors, 10% chance of placing
-        // ship in the first, or last square
+        // ship in the first, or last row
         // later, add mouse hover, for player interaction
 
     }

@@ -7,8 +7,8 @@ class Board {
     }
 
     fetchSquare(x, y) {
-        if (this.data[x] && this.data[x][y])
-            return this.data[x][y];
+        if (this.data[y] && this.data[y][x])
+            return this.data[y][x];
         else
             return null;
     }
@@ -18,7 +18,10 @@ class Board {
         // but it works as intended, will clarify later
         // maybe Ifs shouldnt be nested for complete And 
         // perfect modularity
-        
+        // fetchSquare should only return if a square exist.
+        // this function could be made just running fetchSquare
+        // 6-8 times. Try later.
+
         let squareNeighbors = [];
         let x = square.x;
         let y = square.y;
