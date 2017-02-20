@@ -24,6 +24,7 @@ class Square {
 
     setSquareShot() {
         this.squareShot = true;
+        this.color = "grey";
     }
 
     setShipHere() {

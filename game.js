@@ -1,115 +1,142 @@
 class Game {
-    createPlayers(width, height) {
+    constructor(boardWidth, boardHeight, graphics, gridSize) {
+        this.boardWidth = boardWidth;
+        this.boardHeight = boardHeight;
+    }
+    
+    createPlayers() {
         const names = ["Mrello", "Andrello", "Simello"];
         this.players = names.map(name => {
             return new Player(name);
         });
  
         this.players.forEach((player) => {
-            player.board = new Board(width, height);
+            player.board = new Board(this.boardWidth, this.boardHeight);
+            for (let enemy of this.players) {
+                if (enemy != player) {
+                    player.shootingHistory[enemy.name] = [];
+                }
+            }
         });
     }
 
-    placeShipByCoords(x, y, size, direction, board) {
-        // If id ask for player, I could set unique colors
-        // game will check if player followed the rules, 
-        // while picking the ship coords, and will place it
+    checkShipPlace(x , y , size, direction, board) {
         let i = 0;
         let whiteList = [];
         while (i < size) {
-            if (direction == "v" && x + size - 1 < board.data.length) {
+            if (direction == "v" && y + size - 1 < board.data.length) {
                 for (let neighbor of board.fetchSquare(x, y + i).neighbors) {
                     if (whiteList.indexOf(neighbor) == -1 && neighbor.shipHere == true) {
-                        return;
+                        return false;
                     }
                 }
-                board.fetchSquare(x, y + i).setShipHere();
-                board.fetchSquare(x, y + i).setColor("white");
                 whiteList.push(board.fetchSquare(x, y + i));
             }
-            else if (direction == "h" && y + size - 1 < board.data[0].length) {
+            else if (direction == "h" && x + size - 1 < board.data[0].length) {
                 for (let neighbor of board.fetchSquare(x + i, y).neighbors) {
                     if (whiteList.indexOf(neighbor) == -1 && neighbor.shipHere == true) {
-                        return;
+                        return false;
                     }
                 }
+                whiteList.push(board.fetchSquare(x + i, y));
+            }
+            i++;
+        }
+        return true;              
+    }
+
+    placeShipByCoords(x, y, size, direction, board) {
+        if (this.checkShipPlace(x, y, size, direction, board) === false) {
+            console.log("no ship, not enough space");
+            return;
+        }
+        let i = 0;
+        while (i < size) {
+            if (direction == "h" && x + size - 1 < board.data.length) {
                 board.fetchSquare(x + i, y).setShipHere();
                 board.fetchSquare(x + i, y).setColor("white");
-                whiteList.push(board.fetchSquare(x + i, y));
+            }
+            else if (direction == "v" && y + size - 1 < board.data[0].length) {
+                board.fetchSquare(x, y + i).setShipHere();
+                board.fetchSquare(x, y + i).setColor("white");
             }
             i++;
         }
     }
 
     placeShipBySquare(square, size, direction, board) {
-        // checking for neighbors and accounting for it is 
-        // complete. Now I must stop reverse the code, if while placing
-        // a ship, another ship is met in the middle. 
-        
         let x = square.x;
         let y = square.y;
         let i = 0;
-        let whiteList = [];
+        if (this.checkShipPlace(x, y, size, direction, board) === false) {
+            console.log("no ship, not enough space");
+            return;
+        }        
         while (i < size) {
-            if (direction == "v" && x + size - 1 < board.data.length) {
-                for (let neighbor of board.fetchSquare(x + i, y).neighbors) {
-                    if (whiteList.indexOf(neighbor) == -1 && neighbor.shipHere == true) {
-                        return;
-                    }
-                }
+            if (direction == "h" && x + size - 1 < board.data.length) {
                 board.fetchSquare(x + i, y).setShipHere();
                 board.fetchSquare(x + i, y).setColor("white");
-                whiteList.push(board.fetchSquare(x + i, y));
             }
-            else if (direction == "h" && y + size - 1 < board.data[0].length) {
-                for (let neighbor of board.fetchSquare(x, y + i).neighbors) {
-                    if (whiteList.indexOf(neighbor) == -1 && neighbor.shipHere == true) {
-                        return;
-                    }
-                }                
+            else if (direction == "v" && y + size - 1 < board.data[0].length) {              
                 board.fetchSquare(x, y + i).setShipHere();
                 board.fetchSquare(x, y + i).setColor("white");
-                whiteList.push(board.fetchSquare(x + i, y));
             }
             i++;
         }
     }
 
-    shootShip() {
+    shootShip(square) {
         // if player decideShipShoot is true, square.setSquareShot();
         // player function uses logic to decide the coords, this one
         // actually places it, if conditions are met.
+        square.setSquareShot();
     }
 
-    makeMove() {
+    firstMove() {
         let coords = this.players[0].pickRandSquare();
         this.placeShipByCoords(5, 1, 2, "v", this.players[0].board); 
-        this.placeShipByCoords(6, 6, 4, "h", this.players[0].board);  
+        this.placeShipByCoords(6, 6, 4, "h", this.players[0].board); 
         this.placeShipBySquare(coords, 2, "h", this.players[0].board);
+        this.placeShipByCoords(4, 3, 4, "h", this.players[1].board); 
+        this.placeShipByCoords(2, 6, 4, "h", this.players[1].board); 
+        this.placeShipBySquare(coords, 2, "h", this.players[1].board);
     }
 
-    drawPlayers(graphics, gridSize) {
-        let i = 0;
-        let z = 0;
-        for (const player of this.players) {
-            graphics.drawBoard(this.players[i].board.data, Math.floor(z * gridSize[0]), 0);
-            i++;
-            z += 1.25;
+    playerMove() {
+        for (let player of this.players) {
+            let targetSquare = player.decideFireSpot(this.players);
+            if (targetSquare) {
+                this.shootShip(targetSquare);
+            }
         }
     }
 
-    start () {
-        const boardWidth = 10;
-        const boardHeight = 10;
-        const graphics = new Graphics(15, 15, 2);
-        const gridSize = graphics.getGridSize(boardWidth, boardHeight);
+    drawPlayers() {
+        const dataList = this.players.map(player => player.board.data);
+        this.graphics.draw(dataList);
+    }
 
-        this.createPlayers(boardWidth, boardHeight);
-        graphics.initGraphics(gridSize[0], gridSize[1], this.players.length);
-        this.makeMove();
-        this.drawPlayers(graphics, gridSize);
+    start () {
+        this.createPlayers();
+        this.graphics = new Graphics({
+            cellWidth: 15,
+            cellHeight: 15,
+            spcBetweenSquares: 2,
+            boardWidth: this.boardWidth,
+            boardHeight: this.boardHeight,
+            playerNumber: this.players.length
+        });
+        
+        this.firstMove();
+        this.drawPlayers();
+        window.setInterval(this.update.bind(this), 1000);
+    }
+
+    update () {
+        this.playerMove();
+        this.drawPlayers(); 
     }
 }
 
-var game = new Game();
+var game = new Game(10, 10);
 game.start();

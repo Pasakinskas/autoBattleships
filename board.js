@@ -2,6 +2,7 @@ class Board {
     constructor (width, height) {
         this.width = width;
         this.height = height;
+        this.squareList = [];
         this.data = this.createSquareArray();
         this.populateNeighbors();
     }
@@ -65,7 +66,10 @@ class Board {
         while (board.length < this.height) {
             var row = [];
             while (row.length < this.width) {
-                row.push(new Square(row.length, board.length));
+                const square = new Square(row.length, board.length);
+                row.push(square);
+                this.squareList.push(square);
+
             }
             board.push(row);
         }
