@@ -16,12 +16,6 @@ class Square {
         return this.color;
     }
 
-    getCoords() {
-        let coords = [];
-        coords.push(this.x, this.y);
-        return coords;
-    }
-
     setSquareShot() {
         this.squareShot = true;
         this.color = "grey";

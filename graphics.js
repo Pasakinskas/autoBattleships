@@ -32,14 +32,16 @@ class Graphics {
                     this.context.fillStyle = "blue";                    
                 }
                 this.context.fillStyle = square.getColor();
-                this.context.fillRect(x * (this.cellWidth + this.spcBetweenSquares) + paddingLeft + this.spcBetweenSquares, 
-                y * (this.cellHeight + this.spcBetweenSquares) + paddingTop + this.spcBetweenSquares,
-                this.cellWidth, this.cellHeight);
+                this.context.fillRect(x * (this.cellWidth + this.spcBetweenSquares) +
+                    paddingLeft + this.spcBetweenSquares, 
+                    y * (this.cellHeight + this.spcBetweenSquares) +
+                    paddingTop + this.spcBetweenSquares,
+                    this.cellWidth, this.cellHeight);
             });
         });
     }
 
-    draw (boardDataList) {
+    draw(boardDataList) {
         let z = 0;
         for (const data of boardDataList) {
             this.drawBoard(data, Math.floor(z * this.gridSize[0]), 0);

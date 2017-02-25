@@ -2,6 +2,18 @@ class Game {
     constructor(boardWidth, boardHeight, graphics, gridSize) {
         this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;
+        const self = this;
+        this.loopRuns = true;
+        document.addEventListener("keydown", () => {
+            if (this.loopRuns === true) {
+                this.loopRuns = false;
+                return;
+            }
+            if (this.loopRuns === false) {
+                this.loopRuns = true;
+                return;
+            }
+        });
     }
     
     createPlayers() {
@@ -20,66 +32,73 @@ class Game {
         });
     }
 
-    checkShipPlace(x , y , size, direction, board) {
+    checkShipPlace(x , y , size, direction, player) {
         let i = 0;
         let whiteList = [];
         while (i < size) {
-            if (direction == "v" && y + size - 1 < board.data.length) {
-                for (let neighbor of board.fetchSquare(x, y + i).neighbors) {
+            if (direction == "v" && y + size - 1 < player.board.data.length) {
+                for (let neighbor of player.board.fetchSquare(x, y + i).neighbors) {
                     if (whiteList.indexOf(neighbor) == -1 && neighbor.shipHere == true) {
                         return false;
                     }
                 }
-                whiteList.push(board.fetchSquare(x, y + i));
+                whiteList.push(player.board.fetchSquare(x, y + i));
             }
-            else if (direction == "h" && x + size - 1 < board.data[0].length) {
-                for (let neighbor of board.fetchSquare(x + i, y).neighbors) {
+            else if (direction == "h" && x + size - 1 < player.board.data[0].length) {
+                for (let neighbor of player.board.fetchSquare(x + i, y).neighbors) {
                     if (whiteList.indexOf(neighbor) == -1 && neighbor.shipHere == true) {
                         return false;
                     }
                 }
-                whiteList.push(board.fetchSquare(x + i, y));
+                whiteList.push(player.board.fetchSquare(x + i, y));
+            }
+            else {
+                return false;
             }
             i++;
         }
         return true;              
     }
 
-    placeShipByCoords(x, y, size, direction, board) {
+    placeShipByCoords(x, y, size, direction, player) {
         if (this.checkShipPlace(x, y, size, direction, board) === false) {
             console.log("no ship, not enough space");
             return;
         }
         let i = 0;
         while (i < size) {
-            if (direction == "h" && x + size - 1 < board.data.length) {
-                board.fetchSquare(x + i, y).setShipHere();
-                board.fetchSquare(x + i, y).setColor("white");
+            if (direction == "h") {
+                player.board.fetchSquare(x + i, y).setShipHere();
+                player.board.fetchSquare(x + i, y).setColor("white");
+                player.myShips.push(player.board.fetchSquare(x + i, y));
             }
-            else if (direction == "v" && y + size - 1 < board.data[0].length) {
-                board.fetchSquare(x, y + i).setShipHere();
-                board.fetchSquare(x, y + i).setColor("white");
+            else if (direction == "v") {
+                player.board.fetchSquare(x, y + i).setShipHere();
+                player.board.fetchSquare(x, y + i).setColor("white");
+                player.myShips.push(player.board.fetchSquare(x, y + i));
             }
             i++;
         }
     }
 
-    placeShipBySquare(square, size, direction, board) {
+    placeShipBySquare(square, size, direction, player) {
         let x = square.x;
         let y = square.y;
         let i = 0;
-        if (this.checkShipPlace(x, y, size, direction, board) === false) {
+        if (this.checkShipPlace(x, y, size, direction, player) === false) {
             console.log("no ship, not enough space");
             return;
         }        
         while (i < size) {
-            if (direction == "h" && x + size - 1 < board.data.length) {
-                board.fetchSquare(x + i, y).setShipHere();
-                board.fetchSquare(x + i, y).setColor("white");
+            if (direction == "h") {
+                player.board.fetchSquare(x + i, y).setShipHere();
+                player.board.fetchSquare(x + i, y).setColor("white");
+                player.myShips.push(player.board.fetchSquare(x + i, y));
             }
-            else if (direction == "v" && y + size - 1 < board.data[0].length) {              
-                board.fetchSquare(x, y + i).setShipHere();
-                board.fetchSquare(x, y + i).setColor("white");
+            else if (direction == "v") {              
+                player.board.fetchSquare(x, y + i).setShipHere();
+                player.board.fetchSquare(x, y + i).setColor("white");
+                player.myShips.push(player.board.fetchSquare(x, y + i));
             }
             i++;
         }
@@ -93,13 +112,14 @@ class Game {
     }
 
     firstMove() {
-        let coords = this.players[0].pickRandSquare();
-        this.placeShipByCoords(5, 1, 2, "v", this.players[0].board); 
-        this.placeShipByCoords(6, 6, 4, "h", this.players[0].board); 
-        this.placeShipBySquare(coords, 2, "h", this.players[0].board);
-        this.placeShipByCoords(4, 3, 4, "h", this.players[1].board); 
-        this.placeShipByCoords(2, 6, 4, "h", this.players[1].board); 
-        this.placeShipBySquare(coords, 2, "h", this.players[1].board);
+        let a = 0;
+        while (a < 5) {
+                for (let player of this.players) {
+                    const pickedSquare = player.pickRandSquare();
+                    this.placeShipBySquare(pickedSquare, 2, Utilities.randDirection(), player);
+                }
+            a++;
+        }
     }
 
     playerMove() {
@@ -114,6 +134,14 @@ class Game {
     drawPlayers() {
         const dataList = this.players.map(player => player.board.data);
         this.graphics.draw(dataList);
+    }
+
+    getPlayerScores () {
+        var output = document.getElementById("game-output");
+        output.innerHTML = "";
+        for (const player of this.players) {
+            output.innerHTML += player.name + " " + " " + player.myShips.length + "\n"
+        }
     }
 
     start () {
@@ -133,8 +161,11 @@ class Game {
     }
 
     update () {
-        this.playerMove();
-        this.drawPlayers(); 
+        if (this.loopRuns === true) {
+            this.playerMove();
+            this.drawPlayers();
+            this.getPlayerScores();
+        } 
     }
 }
 

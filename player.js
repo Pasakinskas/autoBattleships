@@ -3,14 +3,14 @@ class Player {
         this.name = name;
         this.board = null;
         this.shootingHistory = {};
+        this.myShips = [];
     }
 
     pickRandSquare() {
-        let square = this.board.data[Utilities.randinteger(this.board.width)]
-        [Utilities.randinteger(this.board.height)];
-        if (square.shipHere == false) {
-            return square;
-        }
+        let mySquares = this.board.squareList
+            .filter(square => !square.shipHere);
+        const square = mySquares[Utilities.randinteger(mySquares.length)];
+        return square;
     }
 
     decideShipSpot() {
