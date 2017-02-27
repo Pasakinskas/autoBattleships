@@ -32,6 +32,6 @@ class Player {
 
         console.log(this.name, " shot ", victim.name, " at ", square.x, square.y);
         this.shootingHistory[victim.name].push(square);
-        return square;
+        return [square, victim];
     }
 }

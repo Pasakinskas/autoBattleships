@@ -104,11 +104,11 @@ class Game {
         }
     }
 
-    shootShip(square) {
-        // if player decideShipShoot is true, square.setSquareShot();
-        // player function uses logic to decide the coords, this one
-        // actually places it, if conditions are met.
+    shootShip(square, player) {
         square.setSquareShot();
+        if (square.shipHere === true) {
+            player.myShips.splice(player.myShips.indexOf(square), 1);
+        }
     }
 
     firstMove() {
@@ -124,9 +124,9 @@ class Game {
 
     playerMove() {
         for (let player of this.players) {
-            let targetSquare = player.decideFireSpot(this.players);
-            if (targetSquare) {
-                this.shootShip(targetSquare);
+            let target = player.decideFireSpot(this.players);
+            if (target) {
+                this.shootShip(target[0], target[1]);
             }
         }
     }
